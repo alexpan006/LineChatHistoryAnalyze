@@ -115,7 +115,7 @@ for line in lines:
         current_date = parse_date(line.split(' ', 1)[-1].strip())
     # Match and parse chat lines
     elif re.match(r'(下午|上午)?\d{1,2}:\d{2}', line):  # Chat line
-        time, sender, message = line.split('\t', 2)
+        time, sender, message = re.split(r'\s+', line, maxsplit=2)
         timestamp = parse_date_time(str(current_date), time.strip())
         chat_data.append((timestamp, sender, message.strip()))
         
