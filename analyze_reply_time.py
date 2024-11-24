@@ -115,10 +115,16 @@ for line in lines:
         current_date = parse_date(line.split(' ', 1)[-1].strip())
     # Match and parse chat lines
     elif re.match(r'(下午|上午)?\d{1,2}:\d{2}', line):  # Chat line
-        time, sender, message = re.split(r'\s+', line, maxsplit=2)
-        timestamp = parse_date_time(str(current_date), time.strip())
-        chat_data.append((timestamp, sender, message.strip()))
-        
+        if ("收回訊息" in line or "已設定公告" in line):
+            continue
+        try:
+            time, sender, message = re.split(r'\s+', line, maxsplit=2)
+            # print(sender, message)
+            timestamp = parse_date_time(str(current_date), time.strip())
+            chat_data.append((timestamp, sender, message.strip()))
+        except Exception as err:
+            pass
+# print(chat_data)
 daily_avg_response_time = calculate_avg_reply_time_by_day(chat_data, threshold_hours)
 
 
