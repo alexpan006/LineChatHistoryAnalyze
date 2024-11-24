@@ -110,7 +110,7 @@ for line in lines:
         current_date = parse_date(line.split(' ', 1)[-1].strip())
     # Match and parse chat lines
     elif re.match(r'(下午|上午)?\d{1,2}:\d{2}', line):  # Chat line
-        if ("收回訊息" in line or "已設定公告" in line):
+        if ("收回訊息" in line or "公告" in line or "記事本" in line or "相簿" in line or "活動" in line or "建立" in line ):
             continue
         try:
             time, sender, message = re.split(r'\s+', line, maxsplit=2)
