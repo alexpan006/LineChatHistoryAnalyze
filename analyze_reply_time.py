@@ -8,12 +8,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import platform
 # Helper function to parse dates and times
+# Helper function to parse date and time
 def parse_date_time(date_str, time_str):
-    am_pm = 'PM' if '下午' in time_str else 'AM'
-    time_str = time_str.replace('下午', '').replace('上午', '').strip()
-    full_datetime_str = f"{date_str} {time_str} {am_pm}"
-    return datetime.strptime(full_datetime_str, "%Y/%m/%d %I:%M %p")
-
+    """
+    Parse the date and time strings based on their format.
+    - Handles both 12-hour (AM/PM) and 24-hour formats.
+    """
+    if "下午" in time_str or "上午" in time_str:  # 12-hour format
+        am_pm = 'PM' if '下午' in time_str else 'AM'
+        time_str = time_str.replace('下午', '').replace('上午', '').strip()
+        full_datetime_str = f"{date_str} {time_str} {am_pm}"
+        return datetime.strptime(full_datetime_str, "%Y/%m/%d %I:%M %p")
+    else:  # 24-hour format
+        full_datetime_str = f"{date_str} {time_str}"
+        return datetime.strptime(full_datetime_str, "%Y/%m/%d %H:%M")
 # Function to calculate average reply time by day with a threshold
 def calculate_avg_reply_time_by_day(chat_data, threshold_hours=5):
     daily_response_times = defaultdict(lambda: defaultdict(list))
@@ -69,7 +77,6 @@ else:
 with open(file_path, "r", encoding="utf-8") as file:
     file_content = file.read()
 
-# The rest of the script remains unchanged
 # Extract chat data
 chat_data = []
 current_date = None
@@ -78,9 +85,9 @@ lines = file_content.strip().split('\n')
 for line in lines:
     if re.match(r'\d{4}/\d{2}/\d{2}', line):  # Date header
         current_date = line.split('（')[0].strip()
-    elif re.match(r'(下午|上午)\d{1,2}:\d{2}', line):  # Chat line
+    elif re.match(r'(下午|上午)?\d{1,2}:\d{2}', line):  # Chat line
         time, sender, message = line.split('\t', 2)
-        timestamp = parse_date_time(current_date, time)
+        timestamp = parse_date_time(current_date, time.strip())
         chat_data.append((timestamp, sender, message.strip()))
         
 daily_avg_response_time = calculate_avg_reply_time_by_day(chat_data, threshold_hours)
