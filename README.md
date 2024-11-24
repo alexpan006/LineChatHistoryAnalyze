@@ -51,6 +51,12 @@ python analyze_reply_time.py chat_history.txt 5 25
   下午12:42	John	Hello there!
   下午01:00	Alice	Hi, John!
   ```
+  或是
+  ```
+  2024/06/11（二）
+  12:42	John	Hello there!
+  13:00	Alice	Hi, John!
+  ```
 
 ## 輸出
 
@@ -118,6 +124,13 @@ The chat history file should follow this structure:
   2024/06/11（二）
   下午12:42	John	Hello there!
   下午01:00	Alice	Hi, John!
+  ```
+  or
+
+  ```
+  2024/06/11（二）
+  12:42	John	Hello there!
+  13:00	Alice	Hi, John!
   ```
 
 ## Output
