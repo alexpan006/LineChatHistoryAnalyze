@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 import re
-from matplotlib import rcParams
+from matplotlib import font_manager
 import matplotlib.font_manager as fm
+from matplotlib import rcParams
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -84,15 +85,9 @@ if len(sys.argv) > 3:
 else:
     picture_width = 20
  
-#Font setting
-# Detect operating system
-if platform.system() == "Darwin":  # macOS
-    rcParams['font.family'] = ['PingFang TC', 'Apple Color Emoji']
-elif platform.system() == "Windows":
-    rcParams['font.family'] = ['Microsoft JhengHei', 'Segoe UI Emoji']
-else:
-    rcParams['font.family'] = ['DejaVu Sans']
-   
+# Load the custom font
+custom_font_path = 'font/NotoSansTC-Regular.ttf'  # Path to the font file
+custom_font = font_manager.FontProperties(fname=custom_font_path)
 
 # ---------------------- Config Part-------------------------
 
@@ -161,7 +156,7 @@ plt.title("Average Reply Time Over Days", fontsize=14)
 plt.xlabel("Date", fontsize=12)
 plt.ylabel("Average Reply Time (minutes)", fontsize=12)
 plt.xticks(rotation=45)
-plt.legend(title="Sender")
+plt.legend(title="Sender",prop=custom_font)
 plt.grid(alpha=0.3)
 
 # Show the plot
@@ -185,7 +180,7 @@ plt.xlabel("Date", fontsize=12)
 plt.ylabel("Total Chat Sentences", fontsize=12)
 plt.xticks(rotation=45)
 plt.grid(alpha=0.3)
-plt.legend()
+plt.legend(prop=custom_font)
 
 # Show the plot
 plt.tight_layout()
