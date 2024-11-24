@@ -9,19 +9,45 @@ import matplotlib.pyplot as plt
 import platform
 # Helper function to parse dates and times
 # Helper function to parse date and time
+
+
+def parse_date(date_str):
+    """
+    Parse the date string dynamically based on its format.
+    - Handles `YYYY/MM/DD（Day）` and `Day DD.MM.YYYY` formats.
+    """
+    try:
+        # Handle `YYYY/MM/DD（Day）`
+        clean_date = re.sub(r'（.*?）', '', date_str).strip()  # Remove （Day）
+        return datetime.strptime(clean_date, "%Y/%m/%d").date()
+    except ValueError:
+        try:
+            # Handle `Day DD.MM.YYYY` (remove leading Day)
+            clean_date = re.sub(r'^[一二三四五六日]\s', '', date_str).strip()
+            return datetime.strptime(clean_date, "%d.%m.%Y").date()
+        except ValueError as e:
+            raise ValueError(f"Unable to parse date: {date_str}") from e
+
+
 def parse_date_time(date_str, time_str):
     """
-    Parse the date and time strings based on their format.
+    Parse the date and time strings dynamically.
     - Handles both 12-hour (AM/PM) and 24-hour formats.
     """
     if "下午" in time_str or "上午" in time_str:  # 12-hour format
         am_pm = 'PM' if '下午' in time_str else 'AM'
         time_str = time_str.replace('下午', '').replace('上午', '').strip()
         full_datetime_str = f"{date_str} {time_str} {am_pm}"
-        return datetime.strptime(full_datetime_str, "%Y/%m/%d %I:%M %p")
+        return datetime.strptime(full_datetime_str, "%Y-%m-%d %I:%M %p")
     else:  # 24-hour format
         full_datetime_str = f"{date_str} {time_str}"
-        return datetime.strptime(full_datetime_str, "%Y/%m/%d %H:%M")
+        return datetime.strptime(full_datetime_str, "%Y-%m-%d %H:%M")
+    
+    
+    # else:  # 24-hour format
+    #     full_datetime_str = f"{date_str} {time_str}"
+    #     return datetime.strptime(full_datetime_str, "%Y/%m/%d %H:%M")
+    
 # Function to calculate average reply time by day with a threshold
 def calculate_avg_reply_time_by_day(chat_data, threshold_hours=5):
     daily_response_times = defaultdict(lambda: defaultdict(list))
@@ -49,7 +75,6 @@ def calculate_avg_reply_time_by_day(chat_data, threshold_hours=5):
             sender: sum(times) / len(times) for sender, times in responses.items()
         }
     return daily_avg_response_time
-
 
 # ---------------------- Config Part-------------------------
 file_path = sys.argv[1]  # Replace with the path to your file
@@ -83,11 +108,15 @@ current_date = None
 
 lines = file_content.strip().split('\n')
 for line in lines:
-    if re.match(r'\d{4}/\d{2}/\d{2}', line):  # Date header
-        current_date = line.split('（')[0].strip()
+    # Match and parse date header
+    if re.match(r'\d{4}/\d{2}/\d{2}', line):  # Type 1: `YYYY/MM/DD`
+        current_date = parse_date(line.split('（')[0].strip())
+    elif re.match(r'^[一二三四五六日]\s\d{2}\.\d{2}\.\d{4}', line):  # Type 2: `DD.MM.YYYY`
+        current_date = parse_date(line.split(' ', 1)[-1].strip())
+    # Match and parse chat lines
     elif re.match(r'(下午|上午)?\d{1,2}:\d{2}', line):  # Chat line
         time, sender, message = line.split('\t', 2)
-        timestamp = parse_date_time(current_date, time.strip())
+        timestamp = parse_date_time(str(current_date), time.strip())
         chat_data.append((timestamp, sender, message.strip()))
         
 daily_avg_response_time = calculate_avg_reply_time_by_day(chat_data, threshold_hours)
