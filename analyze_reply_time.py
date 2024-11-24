@@ -46,8 +46,8 @@ def calculate_avg_reply_time_by_day(chat_data, threshold_hours=5):
 # ---------------------- Config Part-------------------------
 file_path = sys.argv[1]  # Replace with the path to your file
 threshold_hours=int(sys.argv[2])
-if len(sys.argv) > 2:
-    picture_width = sys.argv[2]
+if len(sys.argv) > 3:
+    picture_width = sys.argv[3]
 else:
     picture_width = 20
  
@@ -132,7 +132,7 @@ plt.show()
 output_file = "total_chat_sentences_over_time.png"
 total_chat_data = pd.DataFrame(list(daily_chat_counts.items()), columns=['Date', 'Total Chat Sentences'])
 total_chat_data.sort_values(by='Date', inplace=True)
-
+# print(picture_width)
 # Plot the total chat sentences over time
 plt.figure(figsize=(int(picture_width), 6))
 plt.plot(total_chat_data['Date'], total_chat_data['Total Chat Sentences'], marker='.', label="Total Chat Sentences")
@@ -149,4 +149,4 @@ plt.legend()
 plt.tight_layout()
 plt.savefig(output_file, format='png', dpi=300)  # Save as PNG with 300 DPI
 plt.show()
-print("done")
+# print("done")
