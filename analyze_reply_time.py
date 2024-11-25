@@ -2,14 +2,9 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import re
 from matplotlib import font_manager
-import matplotlib.font_manager as fm
-from matplotlib import rcParams
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
-import platform
-# Helper function to parse dates and times
-# Helper function to parse date and time
 
 
 def parse_date(date_str):
@@ -44,10 +39,6 @@ def parse_date_time(date_str, time_str):
         full_datetime_str = f"{date_str} {time_str}"
         return datetime.strptime(full_datetime_str, "%Y-%m-%d %H:%M")
     
-    
-    # else:  # 24-hour format
-    #     full_datetime_str = f"{date_str} {time_str}"
-    #     return datetime.strptime(full_datetime_str, "%Y/%m/%d %H:%M")
     
 # Function to calculate average reply time by day with a threshold
 def calculate_avg_reply_time_by_day(chat_data, threshold_hours=5):
